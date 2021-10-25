@@ -127,6 +127,12 @@ end
 local function main()
 	state, arguments = "EXPLORE", {}
 	while true do
+		if turtle.getFuelLevel() < 100 then
+			for i = 1, 16 do
+          			turtle.select( i )
+          			turtle.refuel()
+        		end
+		end
 		sendStatus(-1)
 		if states[state] then
 			states[state](unpack(arguments))
