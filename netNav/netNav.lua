@@ -60,7 +60,7 @@ local function tryMove()
 	return false
 end
 
-local function findPosition()
+function findPosition()
 	local move = turtle.up
 	while not tryMove() do
 		if not move() then
@@ -278,6 +278,10 @@ function getPosition()
 	if position then
 		return position:value()
 	end
+end
+
+function setHeading(dir)
+    position:setHeading(dir)
 end
 
 function addScanStrategy(strategy)
