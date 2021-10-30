@@ -1,5 +1,5 @@
 if not rednet.isOpen() then
-    for _, side in ipairs({"left", "right", "top", "bottom", "front", "back"}) do
+    for _, side in ipairs({"left", "right", "front", "back", "top", "bottom"}) do
         if peripheral.getType(side) == "modem" then
                 rednet.open(side)
         end
