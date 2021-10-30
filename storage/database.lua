@@ -41,7 +41,6 @@ while true do
         local exists = false
         for _, entry in ipairs(rgxdata) do
             if s.str == entry.str then
-                rednet.broadcast({["return"] = "exists", ["entry"] = entry})
                 exists = true
                 break
             end
@@ -59,17 +58,17 @@ while true do
                 if not found then
                     if entry.str then
                         if string.match(s.item, entry.str) then
-                            rednet.broadcast({["return"] = "success", ["location"] = entry, ["item"] = s.item})
+                            rednet.broadcast({["return"] = "success", ["location"] = entry, ["item"] = s.item}, s.item)
                             found = true
                         end
                     end
                 end
             end
             if not found then
-                rednet.broadcast({["return"] = "none"})
+                rednet.broadcast({["return"] = "none"}, s.item)
             end
         else
-            rednet.broadcast({["return"] = "success", ["location"] = items[s.item], ["item"] = s.item})
+            rednet.broadcast({["return"] = "success", ["location"] = items[s.item], ["item"] = s.item}, s.item)
         end
     elseif s.call == "del" then
         if items[s.item] then

@@ -47,12 +47,19 @@ end
 netNav.setMap("test", 15) -- the second argument determines how frequently the turtle will check with the server for newer map data
 function get(itemname) 
     rednet.broadcast({["call"] = "get", ["item"] = itemname})
-    local senderId, s, protocol = rednet.receive()
+    local s = waitforreturn(itemname)
     if not s["return"] then return false elseif s["return"] == "none" then return false end
     print(serializeTable(s))
     return s
 end
-
+function waitforreturn(item) 
+    local senderId, s, protocol = rednet.receive()
+    if protocol == "return:" .. item then
+        return s
+    else
+        return waitforreturn(item)
+    end
+end
 
 while true do 
     for i = 1, 15 do

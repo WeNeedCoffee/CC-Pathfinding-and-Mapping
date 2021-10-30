@@ -60,9 +60,16 @@ function serializeTable(
     return tmp
 end
 function get(itemname)
-    rednet.broadcast({["call"] = "get", ["item"] = itemname})
+    rednet.broadcast({["call"] = "get", ["item"] = itemname}, "get:" .. itemname)
+    return waitforreturn(itemname)
+end
+function waitforreturn(item) 
     local senderId, s, protocol = rednet.receive()
-    return s
+    if protocol == "return:" .. item then
+        return s
+    else
+        return waitforreturn(item)
+    end
 end
 local tArgs = {...}
 local method = tArgs[1]
