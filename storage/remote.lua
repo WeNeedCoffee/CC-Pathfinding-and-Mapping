@@ -1,7 +1,7 @@
 if not rednet.isOpen() then
     for _, side in ipairs({"left", "right", "front", "back", "top", "bottom"}) do
         if peripheral.getType(side) == "modem" then
-                rednet.open(side)
+            rednet.open(side)
         end
     end
 end
@@ -16,6 +16,7 @@ local dirs = {
     ["east"] = 3
 }
 local call = {}
+ --
 --[[
 rednet.broadcast({["call"] = "set", ["itemname"] = "minecraft:cobblestone", ["item"] = {
     x = 762,
@@ -23,20 +24,26 @@ rednet.broadcast({["call"] = "set", ["itemname"] = "minecraft:cobblestone", ["it
     z = 267,
     dir = 3
 }})
-]]--
-function serializeTable(val, name, skipnewlines, depth)
+]]
+function serializeTable(
+    val,
+    name,
+    skipnewlines,
+    depth)
     skipnewlines = skipnewlines or false
     depth = depth or 0
 
     local tmp = string.rep(" ", depth)
 
-    if name then tmp = tmp .. name .. " = " end
+    if name then
+        tmp = tmp .. name .. " = "
+    end
 
     if type(val) == "table" then
         tmp = tmp .. "{" .. (not skipnewlines and "\n" or "")
 
         for k, v in pairs(val) do
-            tmp =  tmp .. serializeTable(v, k, skipnewlines, depth + 1) .. "," .. (not skipnewlines and "\n" or "")
+            tmp = tmp .. serializeTable(v, k, skipnewlines, depth + 1) .. "," .. (not skipnewlines and "\n" or "")
         end
 
         tmp = tmp .. string.rep(" ", depth) .. "}"
@@ -47,21 +54,25 @@ function serializeTable(val, name, skipnewlines, depth)
     elseif type(val) == "boolean" then
         tmp = tmp .. (val and "true" or "false")
     else
-        tmp = tmp .. "\"[inserializeable datatype:" .. type(val) .. "]\""
+        tmp = tmp .. '"[inserializeable datatype:' .. type(val) .. ']"'
     end
 
     return tmp
 end
-function get(itemname) 
+function get(itemname)
     rednet.broadcast({["call"] = "get", ["item"] = itemname})
     local senderId, s, protocol = rednet.receive()
     return s
 end
 local tArgs = {...}
 local method = tArgs[1]
-if not method then return end
-if method == "set" then 
-    if #tArgs < 6 then return end
+if not method then
+    return
+end
+if method == "set" then
+    if #tArgs < 6 then
+        return
+    end
     call["call"] = "set"
     call["itemname"] = tArgs[2]
     local item = {}
@@ -72,8 +83,10 @@ if method == "set" then
     call["item"] = item
     rednet.broadcast(call)
     print(serializeTable(get(tArgs[2])))
-elseif method == "setr" then 
-    if #tArgs < 6 then return end
+elseif method == "setr" then
+    if #tArgs < 6 then
+        return
+    end
     call["call"] = "setr"
     call["str"] = tArgs[2]
     local item = {}
@@ -91,4 +104,3 @@ elseif method == "del" then
 elseif method == "get" then
     print(serializeTable(get(tArgs[2])))
 end
-
