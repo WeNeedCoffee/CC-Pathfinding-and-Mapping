@@ -72,6 +72,22 @@ if method == "set" then
     call["item"] = item
     rednet.broadcast(call)
     print(serializeTable(get(tArgs[2])))
+elseif method == "setr" then 
+    if #tArgs < 6 then return end
+    call["call"] = "setr"
+    call["str"] = tArgs[2]
+    local item = {}
+    item["x"] = tArgs[3]
+    item["y"] = tArgs[4]
+    item["z"] = tArgs[5]
+    item["dir"] = dirs[tArgs[6]]
+    call["location"] = item
+    rednet.broadcast(call)
+    print(serializeTable(get(tArgs[2])))
+elseif method == "del" then
+    rednet.broadcast(call)
+    rednet.broadcast({["call"] = "get", ["del"] = tArgs[2]})
+    print(serializeTable(get(tArgs[2])))
 elseif method == "get" then
     print(serializeTable(get(tArgs[2])))
 end
