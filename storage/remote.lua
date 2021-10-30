@@ -106,7 +106,7 @@ elseif method == "setr" then
     print(serializeTable(get(tArgs[2])))
 elseif method == "del" then
     rednet.broadcast(call)
-    rednet.broadcast({["call"] = "get", ["del"] = tArgs[2]})
+    rednet.broadcast({["call"] = "del", ["item"] = tArgs[2]})
     print(serializeTable(get(tArgs[2])))
 elseif method == "get" then
     print(serializeTable(get(tArgs[2])))
