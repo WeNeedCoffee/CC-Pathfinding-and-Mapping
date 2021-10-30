@@ -22,12 +22,12 @@ function load(name)
     return textutils.unserialize(data)
 end
 local items = load("data")
-local regex = load("data_regex")
+local rgxdata = load("data_rgxdata")
 if not items then 
     items = {}
 end
-if not regex then
-    regex = {}
+if not rgxdata then
+    rgxdata = {}
 end
 
 while true do 
@@ -37,7 +37,7 @@ while true do
         save(items, "data")
     elseif s.call == "setr" then
         local exists = false
-        for entry in regex do
+        for entry in rgxdata do
             if s.str == entry.str then
                 rednet.broadcast({["return"] = "exists", ["entry"] = entry})
                 exists = true
@@ -46,15 +46,15 @@ while true do
 
         end
         if not exists then 
-            local i = #regex+1
-            regex[i] = s.location
-            regex[i]["str"] = s.str
-            save(regex, "data_regex")
+            local i = #rgxdata+1
+            rgxdata[i] = s.location
+            rgxdata[i]["str"] = s.str
+            save(rgxdata, "data_rgxdata")
         end
     elseif s.call == "get" then
         if not items[s.item] then
             local found = false
-            for entry in regex do
+            for _, entry in ipairs(rgxdata) do
                 if not found then
                 if string.match(s.item, entry.str) then
                     rednet.broadcast({["return"] = "success", ["location"] = entry, ["item"] = s.item})
@@ -71,9 +71,9 @@ while true do
             items[s.item] = nil
         else
             
-            for k, v in pairs(regex) do
+            for k, v in pairs(rgxdata) do
                 if v.str == s.item then
-                    regex[k] = nil
+                    rgxdata[k] = nil
                 end
             end
         end
