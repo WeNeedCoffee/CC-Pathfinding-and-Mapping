@@ -58,17 +58,17 @@ while true do
                 if not found then
                     if entry.str ~= nil then
                         if string.match(s.item, entry.str) then
-                            rednet.broadcast({["return"] = "success", ["location"] = entry, ["item"] = s.item}, s.item)
+                            rednet.broadcast({["return"] = "success", ["location"] = entry, ["item"] = s.item}, "return:" .. s.item)
                             found = true
                         end
                     end
                 end
             end
             if not found then
-                rednet.broadcast({["return"] = "none"}, s.item)
+                rednet.broadcast({["return"] = "none"}, "return:" .. s.item)
             end
         else
-            rednet.broadcast({["return"] = "success", ["location"] = items[s.item], ["item"] = s.item}, s.item)
+            rednet.broadcast({["return"] = "success", ["location"] = items[s.item], ["item"] = s.item}, "return:" .. s.item)
         end
     elseif s.call == "del" then
         if items[s.item] then
