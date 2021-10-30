@@ -37,7 +37,7 @@ while true do
         save(items, "data")
     elseif s.call == "setr" then
         local exists = false
-        for entry in rgxdata do
+        for _, entry in ipairs(rgxdata) do
             if s.str == entry.str then
                 rednet.broadcast({["return"] = "exists", ["entry"] = entry})
                 exists = true
