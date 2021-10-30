@@ -56,7 +56,7 @@ while true do
             local found = false
             for _, entry in ipairs(rgxdata) do
                 if not found then
-                    if entry.str then
+                    if entry.str ~= nil then
                         if string.match(s.item, entry.str) then
                             rednet.broadcast({["return"] = "success", ["location"] = entry, ["item"] = s.item}, s.item)
                             found = true
