@@ -55,11 +55,12 @@ while true do
         if not items[s.item] then
             local found = false
             for entry in regex do
+                if not found then
                 if string.match(s.item, entry.str) then
                     rednet.broadcast({["return"] = "success", ["location"] = entry, ["item"] = s.item})
                     found = true
-                    break
                 end
+            end
             end
             if not found then rednet.broadcast({["return"] = "none"}) end
         else
@@ -69,10 +70,10 @@ while true do
         if items[s.item] then
             items[s.item] = nil
         else
+            
             for k, v in pairs(regex) do
                 if v.str == s.item then
                     regex[k] = nil
-                    break
                 end
             end
         end
