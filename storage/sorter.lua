@@ -1,3 +1,5 @@
+
+
 -- LOAD NETNAV API
 if not netNav then
 	if not os.loadAPI("netNav") then
@@ -45,11 +47,10 @@ function serializeTable(val, name, skipnewlines, depth)
 end
 -- SET NETNAV MAP
 netNav.setMap("test", 15) -- the second argument determines how frequently the turtle will check with the server for newer map data
-function get(itemname) 
+function getItemLocation(itemname) 
     rednet.broadcast({["call"] = "get", ["item"] = itemname})
     local s = waitforreturn(itemname)
     if not s["return"] then return false elseif s["return"] == "none" then return false end
-    print(serializeTable(s))
     return s
 end
 function waitforreturn(item) 
@@ -60,53 +61,59 @@ function waitforreturn(item)
         return waitforreturn(item)
     end
 end
-
+function gotoChest(itemname) 
+    local ret = getItemLocation(itemname)
+    if ret then
+        print("Got location for " .. itemname .. " in chest at " .. ret.location.x .. " " .. ret.location.y .. " " .. ret.location.z .. "\n")
+        if netNav.goto(ret.location.x, ret.location.y, ret.location.z) then
+            netNav.setHeading(ret.location.dir)
+            return true
+        else
+            print("Don't know how to get to chest for " .. itemname)
+        end
+    else
+        print("Don't know where to put " .. itemname)
+    end
+    return false
+end
+function gotoMainChest() 
+    local x, y, z = gps.locate()
+    if x ~= 755 or y ~= 6 or z ~= 282 then
+        netNav.goto(775, 6, 282) 
+        netNav.setHeading(2)
+    end
+end
 while true do 
-    for i = 1, 15 do
+    for i = 1, 16 do
         turtle.select(i)
-        sleep(0.5)
+        sleep(0.25)
         if turtle.getItemDetail(i) then 
-            local cont = true
-            if turtle.getItemDetail(i).name == "minecraft:coal" then
-                if not turtle.getItemDetail(16) then
-                    turtle.transferTo(16)
-                    cont = false
-                end
-            end
-            if cont then
-                local ret = get(turtle.getItemDetail(i).name)
-                if ret then
-                    if turtle.getFuelLevel() < 1000 then
-                        turtle.select(16)
-                        turtle.refuel()
-                        turtle.select(i)
-                    end
-
-                    netNav.goto(ret.location.x, ret.location.y, ret.location.z)
-                    netNav.setHeading(ret.location.dir)
+            if gotoChest(turtle.getItemDetail(i).name) then
                     turtle.drop()
-                end
             end
         end
     end
-    netNav.goto(775, 6, 282) 
-    netNav.setHeading(2)
-    for i = 1, 15 do
+    gotoMainChest()
+    for i = 1, 16 do
         turtle.select(i)
-        sleep(0.5)
+        sleep(0.25)
         turtle.dropUp()
     end
     
     local found = false
     while not found do
-        for i = 1, 15 do
-            turtle.select(i)
-            local a = turtle.suckUp()
-            sleep(0.5)
-            if not found then
-                if a then
-                    found = true
+        for i = 1, 16 do
+            if not turtle.getItemDetail(i) then     
+                turtle.select(i)
+                local a = turtle.suckUp()
+                sleep(0.25)
+                if not found then
+                    if a then
+                        found = true
+                    end
                 end
+            else
+                found = true
             end
         end
         if not found then sleep(5) end
